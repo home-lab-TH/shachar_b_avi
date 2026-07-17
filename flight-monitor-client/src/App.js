@@ -68,7 +68,7 @@ function App() {  const [data, setData] = useState({altitude: '', his: '', adi: 
 
   const getLatestData = async () => { // פונקציה אסינכרונית שמטפלת בקבלת הנתונים העדכניים ביותר של הטיסה מהשרת. היא מנסה לשלוח בקשת GET לכתובת 'http://localhost:5000/api/flightData/latest' כדי לקבל את הנתונים העדכניים ביותר, ואז מעדכנת את מצב הנתונים (data) עם התגובה שהתקבלה. אם יש שגיאה במהלך הבקשה או אם השרת מחזיר תגובה לא תקינה, היא מציגה הודעת שגיאה מתאימה.
     try {
-      const response = await fetch('http://localhost:5000/api/flightData');
+      const response = await fetch('api/flightData');
       const latestData = await response.json();
       setData(latestData);
     } catch (error) {
@@ -83,7 +83,7 @@ function App() {  const [data, setData] = useState({altitude: '', his: '', adi: 
     showMessage('', '');
 
     try { // מנסה לבצע את הקוד שבתוך הבלוק הזה, ואם יש שגיאה כלשהי במהלך הביצוע, הוא יתפוס את השגיאה ויטפל בה בבלוק ה-catch שמתחתיו. זה מאפשר לנו לנהל שגיאות בצורה מסודרת ולמנוע קריסות של האפליקציה כאשר משהו משתבש במהלך הביצוע של הקוד.
-      const response = await fetch('http://localhost:5000/api/flightData', {
+      const response = await fetch('api/flightData', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
