@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   db:
-    image: mongo:latest
+    image: mongo:8.2  # pinned: data volume was created by 8.2.11
     restart: always
     volumes:
       - mongo-data:/data/db
