@@ -1,0 +1,32 @@
+name: Deploy to docker-avi
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-docker-avi
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, docker-avi]
+    env:
+      APP_DIR: /opt/shachar_b
+    steps:
+      - uses: actions/checkout@v5
+      - name: Sync code (keeps server/.env)
+        run: |
+          [ -w "$APP_DIR" ] || { echo "$APP_DIR must be owned by $(whoami)"; exit 1; }
+          rsync -a --delete --exclude='.git/' --exclude='node_modules/' --exclude='server/.env' ./ "$APP_DIR/"
+      - name: Build and start
+        working-directory: /opt/shachar_b
+        run: |
+          docker compose up -d --build --remove-orphans
+          docker image prune -f > /dev/null
+      - name: Health check
+        run: |
+          for i in $(seq 1 20); do curl -fsS http://localhost:3000/ > /dev/null && { echo healthy; exit 0; }; sleep 3; done
+          docker compose -f /opt/shachar_b/docker-compose.yml logs --tail 40
+          exit 1
