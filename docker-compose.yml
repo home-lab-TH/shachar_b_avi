@@ -1,18 +1,12 @@
+# MongoDB is the shared homelab database on central-db-server (CT 106).
+# The connection string (with this app's user) lives in server/.env on docker-avi only.
 services:
-  db:
-    image: mongo:8.2  # pinned: data volume was created by 8.2.11
-    restart: always
-    volumes:
-      - mongo-data:/data/db
-
   server:
     build: ./server
     restart: always
+    env_file: ./server/.env
     environment:
-      - MONGO_URI=mongodb://db:27017/flightMonitor
       - PORT=5000
-    depends_on:
-      - db
 
   client:
     build: ./flight-monitor-client
@@ -21,6 +15,3 @@ services:
       - "3000:80"
     depends_on:
       - server
-
-volumes:
-  mongo-data:
